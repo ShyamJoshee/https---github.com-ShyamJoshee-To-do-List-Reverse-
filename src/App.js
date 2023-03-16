@@ -1,50 +1,47 @@
 import React, { useState } from 'react'
 import './App.css';
 
-function ToDo({ todoId, createdAt }) {
-  return (
-    <tr>
-      <td>
-        <p>{todoId}</p>
-      </td>
-      <td>
-        <input placeholder="Enter your task" />
-      </td>
-      <td>
-        <p>{createdAt}</p>
-      </td>
-    </tr>
-  );
+function ToDo(props) {
+  const {obj, todoValue, setTodoValue} = props;
+  return (<tr>
+    <td>
+      <p>{obj.id}</p>
+    </td>
+    <td>
+      <input value={todoValue} onChange={(event) => setTodoValue(event.target.value)}/>
+    </td>
+    <td>
+      <p>{obj.createdAt}</p>
+    </td>
+  </tr>)
 }
 
 function App() {
-  const [todos, setTodos] = useState([
-    {
-      id: 'todo1',
-      createdAt: '20:30',
-    },
-    {
-      id: 'todo2',
-      createdAt: '18:00',
-    },
+  const [todoValue1, setTodoValue1] = useState('');
+  const [todoValue2, setTodoValue2] = useState('');
+  const [todos, setTodos] = useState([{
+    id: 'todo1',
+    createdAt: '20:30',
+  }, {
+    id: 'todo2',
+    createdAt: '18:00',
+  }
   ]);
 
-  const reverseOrder = () => {
-    setTodos([...todos].reverse());
-  };
+  const [reverse, setReverse] = useState(true);
 
   return (
     <div id="main">
-      <button onClick={reverseOrder}>Reverse</button>
+      <button onClick={() => setReverse(!reverse)}>Reverse</button>
       <table>
         <tbody>
-          {todos.map((todo) => (
-            <ToDo key={todo.id} todoId={todo.id} createdAt={todo.createdAt} />
-          ))}
+          {reverse ?  <ToDo obj={todos[0]} todoValue={todoValue1} setTodoValue={setTodoValue1}/> : <ToDo obj={todos[1]} todoValue={todoValue2} setTodoValue={setTodoValue2}/>}
+          {reverse ? <ToDo obj={todos[1]} todoValue={todoValue2} setTodoValue={setTodoValue2}/> : <ToDo obj={todos[0]} todoValue={todoValue1} setTodoValue={setTodoValue1}/>}
         </tbody>
       </table>
     </div>
-  );
+  )
 }
+
 
 export default App;
