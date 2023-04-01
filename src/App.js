@@ -1,50 +1,57 @@
-import React, { useState } from 'react'
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import '../styles/App.css';
 
-function ToDo({ todoId, createdAt }) {
-  return (
-    <tr>
-      <td>
-        <p>{todoId}</p>
-      </td>
-      <td>
-        <input placeholder="Enter your task" />
-      </td>
-      <td>
-        <p>{createdAt}</p>
-      </td>
-    </tr>
-  );
-}
+const App = () => {
+  const [category, setCategory] = useState("general");
+  const [newsData, setNewsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+ const API_KEY="";
 
-function App() {
-  const [todos, setTodos] = useState([
-    {
-      id: 'todo1',
-      createdAt: '20:30',
-    },
-    {
-      id: 'todo2',
-      createdAt: '18:00',
-    },
-  ]);
-
-  const reverseOrder = () => {
-    setTodos([...todos].reverse());
-  };
-
+ const changeFunction=(e)=>
+ {
+  setCategory(e.target.value);
+ }
+ useEffect(()=>
+ {
+   setLoading(true);
+   fetch(`https://gnews.io/api/v4/top-headlines?category=${category}&lang=en&country=us&max=10&apikey=${API_KEY}`).then(res=>res.json())
+   .then((res)=>{
+    setNewsData(res.articles)
+    console.log(res);
+  }).then(()=>setLoading(false));
+ },[category])
   return (
     <div id="main">
-      <button onClick={reverseOrder}>Reverse</button>
-      <table>
-        <tbody>
-          {todos.map((todo) => (
-            <ToDo key={todo.id} todoId={todo.id} createdAt={todo.createdAt} />
-          ))}
-        </tbody>
-      </table>
+      <h1 className='heading'>Top 10 {category} news.</h1>
+      <select value={category} onChange={changeFunction}>
+        <option value="general">General</option>
+        <option value="business">Business</option>
+        <option value="sports">Sports</option>
+        <option value="technology">Technology</option>
+        <option value="world">World</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="science">Science</option>
+      </select>
+      {loading && <p className='loader'>Loading...</p>}
+      {!loading &&<ol>
+       { newsData.map((e,i)=>
+        {
+          return (<li key={i}>
+          <img className='news-img' src={e.image} alt=""/>
+          <section className='new-title-content-author'>
+            <h3 className='news-title'>{e.title}</h3>
+            <section className='new-content-author'>
+              <p className='news-description'>{e.description}</p>
+              <p className='news-source'><strong>Source:</strong>{e.source.name}</p>
+            </section>
+          </section>
+        </li>)
+        })
+      }
+      </ol>}
     </div>
-  );
+  )
 }
+
 
 export default App;
